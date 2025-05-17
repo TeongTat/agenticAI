@@ -13,13 +13,9 @@ st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="c
 st.title("🌍 Awesome Travel Planner")
 
 try:
-    with open("travelpic.jpg", "rb") as img_file:
+    with open("agentictravel.jpg", "rb") as img_file:
         image = Image.open(img_file)
         st.image(image, use_container_width=True)
-except FileNotFoundError:
-    st.error("❌ travelpic.jpg not found. Please check the file path.")
-except Exception as e:
-    st.error(f"❌ Failed to load image: {e}")
 
 st.write("Plan your dream trip with me ✨")
 
