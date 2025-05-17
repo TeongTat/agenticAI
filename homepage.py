@@ -22,8 +22,9 @@ st.write("Plan your dream trip with me ✨")
 destination = st.text_input("📍 Destination", placeholder="e.g., few destinations is possible with , in between...")
 start_date = st.date_input("🗓️ Start Date", value=date.today())
 days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
-flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
 weather_info = st.text_input("☁️ Weather info", placeholder="e.g., tell me about the weather...")
+flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
+
 
 if st.button("🧠 Generate Itinerary"):
     if not destination:
