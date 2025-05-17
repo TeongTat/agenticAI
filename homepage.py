@@ -8,6 +8,19 @@ import os
 # Initialize OpenAI client using secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+# PDF export function
+def export_itinerary_to_pdf(itinerary_text):
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer)
+    text = c.beginText(50, 800)
+    text.setFont("Helvetica", 12)
+    for line in itinerary_text.split('\n'):
+        text.textLine(line)
+    c.drawText(text)
+    c.save()
+    buffer.seek(0)
+    return buffer
+
 st.set_page_config(page_title="🌍 Agentic AI Travel Planner", layout="centered")
 st.title("🌍 Agentic AI Travel Planner")
 st.write("Plan your dream trip with multi-agent AI ✨")
