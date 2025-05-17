@@ -13,6 +13,7 @@ st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="c
 st.title("🌍 Awesome Travel Planner")
 image = Image.open("travel_pic.jpg")
 st.image(image, use_container_width=True)
+
 st.write("Plan your dream trip with me ✨")
 
 # Inputs
