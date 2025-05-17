@@ -45,7 +45,9 @@ if st.button("🧠 Generate Itinerary"):
             user_prompt = (
                 f"Plan a {days}-day trip to {destination}, starting on {start_date}. "
                 f"Include key attractions, dining, and tips. "
-                f"The user provided flight info: '{flight_info or 'No specific flight info'}'.\n\n"    
+                f"Include weather forecast for packing. "
+                f"The user provided flight info: '{flight_info or 'No specific flight info'}'.\n\n"
+             
             )
 
             try:
@@ -58,7 +60,7 @@ if st.button("🧠 Generate Itinerary"):
                     temperature=0.7
                 )
                 itinerary = response.choices[0].message.content
-                st.success("Here's your multi-agent itinerary:")
+                st.success("Here's wonderful travel itinerary✨:")
                 st.markdown(itinerary)
             except Exception as e:
                 st.error(f"Error generating itinerary: {str(e)}")
