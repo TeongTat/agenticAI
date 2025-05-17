@@ -16,7 +16,7 @@ st.write("Plan your dream trip with me ✨")
 destination = st.text_input("📍 Destination")
 start_date = st.date_input("🗓️ Start Date", value=date.today())
 days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
-flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., SQ633 arriving at 10:30 AM...")
+flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
 
 # Simulated weather API function (you can replace this with real data)
 def get_mock_weather(dest, start_date):
