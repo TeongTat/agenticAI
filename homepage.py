@@ -45,7 +45,7 @@ if st.button("🧠 Generate Itinerary"):
                 f"Plan a {days}-day trip to {destination}, starting on {start_date}. "
                 f"Include key attractions, dining, and tips. "
                 f"The user provided flight info: '{flight_info or 'No specific flight info'}'.\n\n"
-                f"Weather assistant reports: {weather_info}"
+               
             )
 
             try:
