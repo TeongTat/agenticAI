@@ -56,5 +56,10 @@ if st.button("🧠 Generate Itinerary"):
                 itinerary = response.choices[0].message.content
                 st.success("Here's your multi-agent itinerary:")
                 st.markdown(itinerary)
+
+            # PDF download
+                pdf_buffer = export_itinerary_to_pdf(itinerary)
+                st.download_button("📄 Download Itinerary as PDF", data=pdf_buffer, file_name="itinerary.pdf", mime="application/pdf")
+                
             except Exception as e:
                 st.error(f"Error generating itinerary: {str(e)}")
