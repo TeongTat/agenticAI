@@ -12,7 +12,7 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
 st.title("🌍 Awesome Travel Planner")
 
-with open("agentictravel.jpg", "rb") as img_file:
+with open("traveltime.jpg", "rb") as img_file:
         image = Image.open(img_file)
         st.image(image, use_container_width=True)
 
