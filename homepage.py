@@ -8,14 +8,14 @@ import os
 # Initialize OpenAI client using secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.set_page_config(page_title="🌍 Agentic AI Travel Planner", layout="centered")
-st.title("🌍 Agentic AI Travel Planner")
-st.write("Plan your dream trip with multi-agent AI ✨")
+st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
+st.title("🌍 Awesome Travel Planner")
+st.write("Plan your dream trip with me ✨")
 
 # Inputs
 destination = st.text_input("📍 Destination")
 start_date = st.date_input("🗓️ Start Date", value=date.today())
-days = st.number_input("📆 Duration (days)", min_value=1, max_value=30, value=5)
+days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
 flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., SQ633 arriving at 10:30 AM...")
 
 # Simulated weather API function (you can replace this with real data)
@@ -26,13 +26,13 @@ if st.button("🧠 Generate Itinerary"):
     if not destination:
         st.warning("Please enter a destination.")
     else:
-        with st.spinner("Planning your adventure with multiple agents..."):
+        with st.spinner("Planning your dream adventure...."):
 
             # Role prompts
             system_prompt = (
                 "You are the orchestrator of three expert agents: \n\n"
                 "- **Travel Planner**: Creates a daily itinerary.\n"
-                "- **Flight Assistant**: Provides useful insights based on given flight info.\n"
+                "- **Flight Assistant**: Provides useful insights based on given flight info and requirements.\n"
                 "- **Weather Advisor**: Advises on weather at the destination.\n\n"
                 "Combine their outputs into a cohesive travel plan. Be friendly, informative, and structured with markdown formatting."
             )
