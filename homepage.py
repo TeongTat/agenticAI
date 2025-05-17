@@ -19,7 +19,7 @@ with open("agentictravel.jpg", "rb") as img_file:
 st.write("Plan your dream trip with me ✨")
 
 # Inputs
-destination = st.text_input("📍 Destination")
+destination = st.text_input("📍 Destination, placeholder="e.g., few destinations is possible...")
 start_date = st.date_input("🗓️ Start Date", value=date.today())
 days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
 flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
