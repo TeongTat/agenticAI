@@ -6,7 +6,7 @@ from openai.types.chat.chat_completion import ChatCompletion
 import os
 
 # Use OpenAI API key from Streamlit secrets
-os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 
 st.set_page_config(page_title="Agentic Travel Planner", layout="centered")
