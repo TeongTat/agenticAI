@@ -24,9 +24,6 @@ start_date = st.date_input("🗓️ Start Date", value=date.today())
 days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
 flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
 
-# Simulated weather API function (you can replace this with real data)
-def get_mock_weather(dest, start_date):
-    return f"Expect sunny weather with mild temperatures (~22°C) in {dest} starting from {start_date.strftime('%B %d')}."
 
 if st.button("🧠 Generate Itinerary"):
     if not destination:
@@ -43,7 +40,6 @@ if st.button("🧠 Generate Itinerary"):
                 "Combine their outputs into a cohesive travel plan. Be friendly, informative, and structured with markdown formatting."
             )
 
-            weather_info = get_mock_weather(destination, start_date)
 
             user_prompt = (
                 f"Plan a {days}-day trip to {destination}, starting on {start_date}. "
