@@ -8,19 +8,6 @@ import os
 # Initialize OpenAI client using secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# PDF export function
-def export_itinerary_to_pdf(itinerary_text):
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer)
-    text = c.beginText(50, 800)
-    text.setFont("Helvetica", 12)
-    for line in itinerary_text.split('\n'):
-        text.textLine(line)
-    c.drawText(text)
-    c.save()
-    buffer.seek(0)
-    return buffer
-
 st.set_page_config(page_title="🌍 Agentic AI Travel Planner", layout="centered")
 st.title("🌍 Agentic AI Travel Planner")
 st.write("Plan your dream trip with multi-agent AI ✨")
@@ -71,10 +58,5 @@ if st.button("🧠 Generate Itinerary"):
                 itinerary = response.choices[0].message.content
                 st.success("Here's your multi-agent itinerary:")
                 st.markdown(itinerary)
-
-            # PDF download
-                pdf_buffer = export_itinerary_to_pdf(itinerary)
-                st.download_button("📄 Download Itinerary as PDF", data=pdf_buffer, file_name="itinerary.pdf", mime="application/pdf")
-                
             except Exception as e:
                 st.error(f"Error generating itinerary: {str(e)}")
