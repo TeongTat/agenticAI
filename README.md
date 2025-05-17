@@ -1,5 +1,3 @@
-First Of All A Big Thanks To Krish Naik Sir!
-
 # **🌟 Travel Agentic AI: The Ultimate Travel Planner 🌟**  
 
 **Travel Planner Agentic AI** redefines financial analysis by integrating cutting-edge AI with real-time web search capabilities. This multi-agent system brings together financial insights and web intelligence to deliver precise, actionable, and up-to-date stock market information, all tailored to your needs.  
