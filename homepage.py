@@ -26,7 +26,7 @@ if st.button("Generate Itinerary"):
 
             try:
                 response: ChatCompletion = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4o",
                     messages=[
                         {"role": "system", "content": "You are a helpful and detailed travel planner."},
                         {"role": "user", "content": prompt}
