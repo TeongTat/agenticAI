@@ -12,7 +12,7 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
 st.title("🌍 Awesome Travel Planner")
 
-image = Image.open("travel_pic.jpg")
+image = Image.open("travelpic.jpg")
 st.image(image, use_container_width=True)
 
 st.write("Plan your dream trip with me ✨")
