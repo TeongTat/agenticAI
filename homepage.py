@@ -1,57 +1,37 @@
+# app.py
 import streamlit as st
-import requests
-from datetime import date
+import openai
+import os
 
-st.set_page_config(page_title="Agentic AI Travel Planner", layout="centered")
-st.title("🌍 Agentic AI Travel Planner (Open Source)")
+# Get the API key from environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-st.markdown("""
-This app uses an open-source LLM to help you plan your travels. It uses [Ollama](https://ollama.com) running locally (e.g., with `mistral`, `llama3`, etc).
+st.set_page_config(page_title="Agentic Travel Planner", layout="centered")
 
-Ensure you have Ollama running locally (`ollama run mistral`) before using this app.
-""")
+st.title("🌍 Agentic AI Travel Planner")
+st.write("Plan your dream trip with GPT-4o-mini ✨")
 
-# --- User Inputs ---
-destination = st.text_input("Where do you want to go?", placeholder="e.g., Tokyo, Japan")
-start_date = st.date_input("Start Date", min_value=date.today())
-end_date = st.date_input("End Date", min_value=start_date)
-interests = st.text_area("What are your interests?", placeholder="e.g., food, culture, anime, museums, nature")
+destination = st.text_input("Where do you want to go?")
+days = st.number_input("How many days?", min_value=1, max_value=30, value=5)
 
-submit = st.button("✈️ Generate Itinerary")
+if st.button("Generate Itinerary"):
+    if not destination:
+        st.warning("Please enter a destination.")
+    else:
+        with st.spinner("Planning your adventure..."):
+            prompt = f"Act as a travel planner. Create a {days}-day travel itinerary for a trip to {destination}. Include places to visit, food recommendations, and tips."
 
-# --- Call Ollama LLM ---
-def ask_llm(prompt, model="mistral"):
-    url = "http://localhost:11434/api/generate"
-    payload = {
-        "model": model,
-        "prompt": prompt,
-        "stream": False
-    }
-    try:
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        return response.json()["response"]
-    except Exception as e:
-        return f"❌ Error: {str(e)}"
-
-# --- Agent Prompt Construction ---
-def build_prompt(destination, start_date, end_date, interests):
-    return f"""
-You are a smart travel agent that helps create personalized travel itineraries.
-Plan a day-by-day itinerary for a trip to {destination} from {start_date} to {end_date}.
-Focus on the following interests: {interests}.
-Include travel tips, food recommendations, and cultural etiquette where relevant.
-"""
-
-# --- Main Execution ---
-if submit and destination:
-    with st.spinner("Thinking like an agent... 🧠"):
-        prompt = build_prompt(destination, start_date, end_date, interests)
-        response = ask_llm(prompt)
-    st.subheader("🗓️ Suggested Itinerary")
-    st.markdown(response)
-elif submit:
-    st.warning("Please enter a destination before generating.")
-
-st.markdown("---")
-st.caption("Built with 💙 by Agentic AI using open-source models")
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful and detailed travel planner."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7
+                )
+                itinerary = response['choices'][0]['message']['content']
+                st.success("Here's your itinerary:")
+                st.markdown(itinerary)
+            except Exception as e:
+                st.error(f"Error generating itinerary: {str(e)}")
