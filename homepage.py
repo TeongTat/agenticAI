@@ -1,6 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 from datetime import date
+from reportlab.pdfgen import canvas
+from io import BytesIO
 import os
 
 # Initialize OpenAI client using secrets
