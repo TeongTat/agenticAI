@@ -1,21 +1,21 @@
 # app.py
 import streamlit as st
-import os
 from openai import OpenAI
+from openai.types.chat import ChatCompletionMessage
+from openai.types.chat.chat_completion import ChatCompletion
+import os
 
-# Set up OpenAI client using environment variable
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Use OpenAI API key from Streamlit secrets
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# Streamlit UI
 st.set_page_config(page_title="Agentic Travel Planner", layout="centered")
+
 st.title("🌍 Agentic AI Travel Planner")
 st.write("Plan your dream trip with GPT-4o-mini ✨")
 
-# User inputs
 destination = st.text_input("Where do you want to go?")
 days = st.number_input("How many days?", min_value=1, max_value=30, value=5)
 
-# Generate itinerary
 if st.button("Generate Itinerary"):
     if not destination:
         st.warning("Please enter a destination.")
@@ -24,18 +24,16 @@ if st.button("Generate Itinerary"):
             prompt = f"Act as a travel planner. Create a {days}-day travel itinerary for a trip to {destination}. Include places to visit, food recommendations, and travel tips."
 
             try:
-                response = client.chat.completions.create(
-                    model="gpt-4o",
+                response: ChatCompletion = client.chat.completions.create(
+                    model="gpt-4o-mini",
                     messages=[
                         {"role": "system", "content": "You are a helpful and detailed travel planner."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.7
                 )
-
                 itinerary = response.choices[0].message.content
                 st.success("Here's your itinerary:")
                 st.markdown(itinerary)
-
             except Exception as e:
                 st.error(f"Error generating itinerary: {str(e)}")
