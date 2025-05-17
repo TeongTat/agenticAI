@@ -3,6 +3,7 @@ from openai import OpenAI
 from datetime import date
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from PIL import Image
 import os
 
 # Initialize OpenAI client using secrets
@@ -10,6 +11,8 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
 st.title("🌍 Awesome Travel Planner")
+image = Image.open("travel_pic.jpg")
+    st.image(image, use_container_width=True)
 st.write("Plan your dream trip with me ✨")
 
 # Inputs
