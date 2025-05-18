@@ -5,3 +5,4 @@ langchain-openai
 openai
 serpapi
 python-dotenv
+google-search-results
