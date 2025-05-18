@@ -3,6 +3,7 @@ import streamlit as st
 from datetime import date, timedelta
 from serpapi_utils import search_hotels, format_hotel_data
 from agentic_core import analyze_hotels, create_itinerary
+from langchain.chat_models import ChatOpenAI
 
 st.set_page_config(page_title="🌍 Travel AI Planner", layout="centered")
 st.title("✈️ AI Travel Planner")
