@@ -25,7 +25,7 @@ if st.button("🔍 Search Hotels & Generate Plan"):
     st.text(hotel_text)
 
     with st.spinner("Analyzing hotels with AI..."):
-        hotel_reco = analyze_hotels.run(hotel_text)
+        hotel_reco = analyze_hotels.run({"hotel_data": hotel_text})
         st.success("✅ Hotel recommendation ready")
         st.markdown(hotel_reco)
 
