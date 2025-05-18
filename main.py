@@ -6,9 +6,10 @@ from agentic_core import analyze_hotels, create_itinerary
 
 st.set_page_config(page_title="🌍 Travel AI Planner", layout="centered")
 st.title("✈️ AI Travel Planner")
+
 with open("summertravel.jpg", "rb") as img_file:
-        image = Image.open(img_file)
-        st.image(image, use_container_width=True)
+image = Image.open(img_file)
+st.image(image, use_container_width=True)
         
 st.markdown("Plan your dream trip with hotel suggestions and a full itinerary 🌴")
 
