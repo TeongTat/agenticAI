@@ -4,3 +4,5 @@ python-dotenv
 datetime
 requests
 reportlab
+serpapi
+tiktoken
