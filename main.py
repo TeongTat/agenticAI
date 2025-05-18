@@ -9,6 +9,7 @@ st.title("✈️ AI Travel Planner")
 with open("summertravel.jpg", "rb") as img_file:
         image = Image.open(img_file)
         st.image(image, use_container_width=True)
+        
 st.markdown("Plan your dream trip with hotel suggestions and a full itinerary 🌴")
 
 # --- User Inputs ---
