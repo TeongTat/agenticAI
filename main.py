@@ -1,37 +1,66 @@
-# main.py
 import streamlit as st
-from datetime import date, timedelta
-from serpapi_utils import search_hotels, format_hotel_data
-from agentic_core import analyze_hotels, create_itinerary
-from langchain.chat_models import ChatOpenAI
+from openai import OpenAI
+from datetime import date
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from PIL import Image
+import os
 
-st.set_page_config(page_title="🌍 Travel AI Planner", layout="centered")
-st.title("✈️ AI Travel Planner")
-        
-st.markdown("Plan your dream trip with hotel suggestions and a full itinerary 🌴")
+# Initialize OpenAI client using secrets
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# --- User Inputs ---
-col1, col2 = st.columns(2)
-location = col1.text_input("📍 Destination", "Tokyo")
-check_in = col1.date_input("Check-in Date", date.today() + timedelta(days=7))
-check_out = col2.date_input("Check-out Date", check_in + timedelta(days=3))
+st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
+st.title("🌍 Awesome Travel Planner")
 
-if st.button("🔍 Search Hotels & Generate Plan"):
-    with st.spinner("Searching hotels..."):
-        hotels = search_hotels(location, check_in.isoformat(), check_out.isoformat())
-        hotel_text = format_hotel_data(hotels)
+with open("summertravel.jpg", "rb") as img_file:
+        image = Image.open(img_file)
+        st.image(image, use_container_width=True)
 
-    st.subheader("🏨 Top Hotels")
-    st.text(hotel_text)
+st.write("Plan your dream trip with me ✨")
 
-    with st.spinner("Analyzing hotels with AI..."):
-        hotel_reco = analyze_hotels.invoke({"hotel_data": hotel_text})
-        st.success("✅ Hotel recommendation ready")
-        st.markdown(hotel_reco)
+# Inputs
+destination = st.text_input("📍 Destination", placeholder="e.g., few destinations is possible with , in between...")
+start_date = st.date_input("🗓️ Start Date", value=date.today())
+days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
+weather_info = st.text_input("☁️ Weather info", placeholder="e.g., tell me about the weather...")
+flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
 
-    days = (check_out - check_in).days
-    fake_flight = f"Arriving in {location} on {check_in} at 9:00 AM, returning on {check_out} at 5:00 PM"
 
-    with st.spinner("🗺️ Creating Itinerary..."):
-        itinerary = create_itinerary.run(location, fake_flight, hotel_reco, days)
-        st.markdown(itinerary)
+if st.button("🧠 Generate Itinerary"):
+    if not destination:
+        st.warning("Please enter a destination.")
+    else:
+        with st.spinner("Planning your dream adventure...."):
+
+            # Role prompts
+            system_prompt = (
+                "You are the orchestrator of three expert agents: \n\n"
+                "- **Travel Planner**: Creates a daily itinerary.\n"
+                "- **Flight Assistant**: Provides useful insights based on given flight info and requirements.\n"
+                "- **Weather Advisor**: Advises on weather at the destination.\n\n"
+                "Combine their outputs into a cohesive travel plan. Be friendly, informative, and structured with markdown formatting."
+            )
+
+
+            user_prompt = (
+                f"Plan a {days}-day trip to {destination}, starting on {start_date}. "
+                f"Include key attractions, dining, and tips. "
+                f"Include weather forecast for packing. "
+                f"The user provided flight info: '{flight_info or 'No specific flight info'}'.\n\n"
+             
+            )
+
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=0.7
+                )
+                itinerary = response.choices[0].message.content
+                st.success("Here's wonderful travel itinerary✨:")
+                st.markdown(itinerary)
+            except Exception as e:
+                st.error(f"Error generating itinerary: {str(e)}")
