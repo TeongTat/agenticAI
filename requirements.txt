@@ -6,3 +6,5 @@ openai
 serpapi
 python-dotenv
 google-search-results
+langchain_core
+pydantic>=2.0
