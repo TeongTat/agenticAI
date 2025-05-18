@@ -30,13 +30,10 @@
 1. **Agent-Based Architecture**:  
    - Build highly specialized AI agents using the `ChatGPT-40` framework.  
 
-2. **Live Data Access**:  
-   - Combines real-time flight, hotel, weather, and web search data for up-to-date planning.  
-
-3. **User-Friendly Interaction**:  
+2. **User-Friendly Interaction**:  
    - Offers detailed responses enriched with formatted tables, Markdown content, and embedded links for easy exploration.  
 
-4. **Query Example**:  
+3. **Query Example**:  
    - **Question**: "Plan a 3-day trip to Tokyo with flight, hotel options, and local weather updates." 
    - **Response**: A step-by-step itinerary with flight schedules, top hotel picks, weather forecast, and must-see attractions.  
 
