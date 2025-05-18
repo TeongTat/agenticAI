@@ -1,105 +1,65 @@
 # **🌟 Travel Agentic AI: The Ultimate Travel Planner 🌟**  
 
-**Travel Planner Agentic AI** redefines financial analysis by integrating cutting-edge AI with real-time web search capabilities. This multi-agent system brings together financial insights and web intelligence to deliver precise, actionable, and up-to-date stock market information, all tailored to your needs.  
+**Travel Planner Agentic AI** revolutionizes travel planning by combining advanced AI-driven agents with real-time web search and data integration. This intelligent multi-agent system streamlines every aspect of your trip — from flights and hotels to weather updates and local insights — delivering personalized, timely, and actionable travel plans all in one seamless experience.
 
 ---
 
 ## **✨ Highlights**  
 
-- **🤖 Intelligent Agents**: A robust team of AI agents designed for specialized roles, ensuring accurate and comprehensive results.  
-- **📊 Financial Insights**: Dive deep into stock prices, company news, analyst recommendations, and historical trends with advanced tools.  
-- **🌐 Real-Time Web Search**: Augment your financial knowledge with live updates from Google Search and DuckDuckGo, ensuring nothing escapes your radar.  
-- **📈 Unified System**: Experience seamless integration of financial and web-based intelligence, empowering your stock market decisions like never before.  
+- **🤖 Intelligent Agents**: Using ChatGPT model to provides itenerary.  
+- **🗺️ End-to-End Travel Planning**:: Covers flights info, weather forecasts, local events, and more — all personalized to your preferences.
+- **:📅 Dynamic & Interactive**: Easy-to-use interface with interactive inputs, multi-step reasoning, and visually rich outputs.  
 
 ---
 
 ## **🔧 Features**  
 
-### **1. Web Search Agent**  
-- **Purpose**: Scours the web for relevant, real-time data.  
+### **1. Travel Insights Agent**  
+- **Purpose**: Analyzes flights information, and weather data to recommend optimal itineraries.  
 - **Tools**:  
-  - **Google Search**: Fixed language and results for consistency.  
-  - **DuckDuckGo**: Privacy-conscious searches with maximum results tailored to your query.  
+  - **Finding attractions, Weather forecasting services**
 - **Capabilities**:  
-  - Always includes sources for transparency.  
-  - Displays results in Markdown format for readability.  
-
-### **2. Financial Insights Agent**  
-- **Purpose**: Analyzes stock market trends and financial data.  
-- **Tools**:  
-  - **YFinanceTools**: Tracks stock prices, company news, analyst recommendations, and historical prices.  
-- **Capabilities**:  
-  - Provides structured insights in easy-to-read tables.  
-  - Combines data visualization and textual summaries for clarity.  
-
-### **3. Multi-Agent Integration**  
-- **Purpose**: Combines the power of Web Search and Financial Insights agents.  
-- **Capabilities**:  
-  - Delivers a holistic view of the stock market.  
-  - Responds to queries with multi-dimensional insights for better decision-making.  
+  - Combines quantitative data with qualitative travel tips
+  - Presents information via interactive tables and charts 
+ 
 
 ---
 
 ## **🔍 How It Works**  
 
 1. **Agent-Based Architecture**:  
-   - Build highly specialized AI agents using the `phi.agent` framework.  
+   - Build highly specialized AI agents using the `ChatGPT-40` framework.  
 
-2. **Real-Time Data Processing**:  
-   - Access live financial and web-based information using APIs.  
+2. **Live Data Access**:  
+   - Combines real-time flight, hotel, weather, and web search data for up-to-date planning.  
 
-3. **Intuitive Interaction**:  
-   - Get responses enriched with tables, Markdown formatting, and always backed by credible sources.  
+3. **User-Friendly Interaction**:  
+   - Offers detailed responses enriched with formatted tables, Markdown content, and embedded links for easy exploration.  
 
 4. **Query Example**:  
-   - **Question**: "Summarize analyst recommendations and share the latest news for Nvidia."  
-   - **Response**: A structured table highlighting analyst sentiments, news trends, and real-time updates.  
+   - **Question**: "Plan a 3-day trip to Tokyo with flight, hotel options, and local weather updates." 
+   - **Response**: A step-by-step itinerary with flight schedules, top hotel picks, weather forecast, and must-see attractions.  
 
----
-
-## **🚀 Quickstart**  
-
-### **Step 1: Clone the Repository**  
-```bash
-git clone https://github.com/yourusername/financial-agentic-ai.git
-cd financial-agentic-ai
-```
-
-### **Step 2: Install Dependencies**  
-```bash
-pip install -r requirements.txt
-```
-
-### **Step 3: Set Up Environment Variables**  
-- Create a `.env` file with the following keys:  
-  ```env
-  GROQ_API_KEY=your_groq_api_key
-  ```
-  
-### **Step 4: Run the Script**  
-```bash
-python financial_agent.py
-```
 
 ---
 
 ## **📚 Key Technologies**  
-- **phi.agent**: Modular AI agent framework.  
-- **Groq Model**: AI model powering intelligent decision-making.  
-- **YFinanceTools**: Real-time financial data analysis.  
-- **Google Search & DuckDuckGo APIs**: Live web search integration.  
+- **Real-Time APIs**: Modular AI agent framework.  
+- **Streamlit**: Interactive front-end for seamless user experience.  
+
 
 ---
 
 ## **🎯 Use Cases**  
-- Financial analysts seeking reliable and actionable insights.  
-- Stock market enthusiasts looking for real-time updates.  
-- AI researchers exploring multi-agent architectures.  
+- Personalized travel planning for busy professionals and adventurers alike.
+- Travel agencies seeking to automate itinerary generation and enhance client service.
+- Developers and researchers building or experimenting with agent-based AI systems.
 
 ---
 
 ## **💡 Why Choose Financial Agentic AI?**  
-- **Dynamic Intelligence**: Combines financial and web insights in a single response.  
-- **Transparency**: Always includes sources and structured outputs for trustworthiness.  
-- **Customizable**: Fully adaptable to various financial scenarios.  
+- **Integrated Intelligence**: Combines diverse data sources into one smart assistant.  
+- **Always Up-to-Date**: Real-time info ensures your plans adapt to current conditions.  
+- **Highly Customizable:**: Tailor your travel experience with flexible inputs and outputs.
+- **ransparent & Trustworthy**: Every suggestion includes clear sources and rationale.
 
