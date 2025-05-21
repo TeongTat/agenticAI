@@ -1,7 +1,6 @@
 import streamlit as st
 from openai import OpenAI
 from datetime import date
-from reportlab.pdfgen import canvas
 from io import BytesIO
 from PIL import Image
 import os
