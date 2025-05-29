@@ -52,11 +52,3 @@
 - Travel agencies seeking to automate itinerary generation and enhance client service.
 - Developers and researchers building or experimenting with agent-based AI systems.
 
----
-
-## **💡 Why Choose Financial Agentic AI?**  
-- **Integrated Intelligence**: Combines diverse data sources into one smart assistant.  
-- **Always Up-to-Date**: Real-time info ensures your plans adapt to current conditions.  
-- **Highly Customizable:**: Tailor your travel experience with flexible inputs and outputs.
-- **ransparent & Trustworthy**: Every suggestion includes clear sources and rationale.
-
