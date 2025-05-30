@@ -1,9 +1,9 @@
 import streamlit as st
-import serpapi
 from serpapi import GoogleSearch
 from openai import OpenAI
 from datetime import date
 from PIL import Image
+import time
 
 # Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -11,136 +11,128 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
 st.title("🌍 Awesome Travel Planner")
 
+# Image Header
 with open("summertravel.jpg", "rb") as img_file:
     image = Image.open(img_file)
     st.image(image, use_container_width=True)
 
 st.write("Plan your dream trip with me ✨")
 
-# Input section
-st.header("📌 Trip Details")
-departure = st.text_input("Departing Country / City", placeholder="e.g., Tokyo")
-arrival = st.text_input("Arrival Country / City", placeholder="e.g., Paris")
-start_date = st.date_input("🗓️ Departure Date", value=date.today())
-return_date = st.date_input("🗓️ Return Date", value=date.today())
-days = st.number_input("📆 Duration (days)", min_value=1, max_value=45, value=5)
-weather_info = st.text_input("☁️ Weather info", placeholder="e.g., general query about weather...")
-flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., preferred airline, cabin class, etc.")
+# Mainframe Input Section
+st.subheader("Enter your travel details below")
+departure_country = st.text_input("🛫 Departure Country", placeholder="e.g., Malaysia")
+arrival_country = st.text_input("🛬 Arrival Country", placeholder="e.g., Japan")
+start_date = st.date_input("📅 Departure Date", value=date.today())
+end_date = st.date_input("📅 Return Date", value=date.today())
+weather_info = st.text_input("☁️ Weather info", placeholder="e.g., tell me about the weather...")
+flight_info = st.text_area("✈️ Flight Details (optional)", placeholder="e.g., flight arrival or other requirements...")
 
-run_query = st.button("🧠 Generate Full Travel Plan")
+# Tabs for outputs
+tab1, tab2, tab3 = st.tabs(["Introduction", "Flight Details", "Summary"])
 
-# Define placeholders for output
-generated_tab1, generated_tab2, generated_tab3 = None, None, None
-
-if run_query and departure and arrival:
-    st.success("Generating full travel plan based on your inputs!")
-
-    # --- Tab 1: Groq/Browser-based Overview (Simulated) ---
-    generated_tab1 = f"""
-### 🌏 Destination Overview: {arrival}
-- Capital: Example City
-- Currency: Example Dollar (EXD)
-- Language: Exampleese
-- Visa Requirement: Required for over 30 days stay
-
-Useful travel tips:
-- Carry cash, not all places accept cards
-- Public transport is widely available
-"""
-
-    # --- Tab 2: Flights with SerpAPI ---
-    flight_results = ""
-    try:
-        params = {
-            "engine": "google_flights",
-            "departure_id": departure[:3].upper(),
-            "arrival_id": arrival[:3].upper(),
-            "outbound_date": str(start_date),
-            "return_date": str(return_date),
-            "currency": "USD",
-            "hl": "en",
-            "api_key": st.secrets["SERPAPI_KEY"]
-        }
-        search = GoogleSearch(params)
-        results = search.get_dict()
-        best_flights = results.get('best_flights', [])
-
-        if not best_flights:
-            flight_results = "No best flights found."
-        else:
-            for i, option in enumerate(best_flights, 1):
-                flight_results += f"\n✈️ **Itinerary #{i}**\n"
-                flight_results += "-" * 50 + "\n"
-                total_duration = option.get('total_duration', 'N/A')
-                total_emissions = option.get('carbon_emissions', {}).get('this_flight', None)
-                emissions_kg = f"{total_emissions / 1000:.1f} kg" if total_emissions else "N/A"
-                price = option.get('price', 'N/A')
-
-                for leg in option.get('flights', []):
-                    airline = leg.get('airline', 'Unknown Airline')
-                    flight_no = leg.get('flight_number', 'N/A')
-                    from_airport = leg.get('departure_airport', {}).get('name', 'Unknown Departure')
-                    to_airport = leg.get('arrival_airport', {}).get('name', 'Unknown Arrival')
-                    depart_time = leg.get('departure_airport', {}).get('time', 'N/A')
-                    arrive_time = leg.get('arrival_airport', {}).get('time', 'N/A')
-                    duration = leg.get('duration', 'N/A')
-                    aircraft = leg.get('airplane', 'N/A')
-                    travel_class = leg.get('travel_class', 'N/A')
-                    legroom = leg.get('legroom', 'N/A')
-
-                    flight_results += (
-                        f"- {airline} Flight {flight_no} from {from_airport} to {to_airport}\n"
-                        f"  Departure: {depart_time} | Arrival: {arrive_time}\n"
-                        f"  Duration: {duration} min | Aircraft: {aircraft} | Class: {travel_class} | Legroom: {legroom}\n"
-                    )
-
-                flight_results += f"💰 **Total Price**: ${price}\n"
-                flight_results += f"🕒 **Total Duration**: {total_duration} min\n"
-                flight_results += f"🌍 **Estimated Emissions**: {emissions_kg}\n\n"
-
-    except Exception as e:
-        flight_results = f"Error fetching flight data: {str(e)}"
-
-    generated_tab2 = flight_results
-
-    # --- Tab 3: Summary AI Orchestration ---
-    system_prompt = (
-        "You are the orchestrator of three expert agents: \n\n"
-        "- Travel Planner: Creates a daily itinerary.\n"
-        "- Flight Assistant: Provides useful insights based on given flight info and requirements.\n"
-        "- Weather Advisor: Advises on weather at the destination.\n\n"
-        "Combine their outputs into a cohesive travel plan. Be friendly, informative, and structured with markdown formatting."
-    )
-    user_prompt = (
-        f"Plan a {days}-day trip to {arrival}, starting on {start_date}. "
-        f"Include key attractions, dining, and tips. Weather query: '{weather_info or 'No weather info'}'.\n"
-        f"Flight details: '{flight_info or 'No specific flight info'}'."
-    )
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            temperature=0.7
-        )
-        generated_tab3 = response.choices[0].message.content
-    except Exception as e:
-        generated_tab3 = f"Error generating itinerary: {str(e)}"
-
-# Tabs to display generated content
-tab1, tab2, tab3 = st.tabs(["🌍 Introduction", "✈️ Flight Details", "🧳 Trip Summary"])
-
+# Define output containers
 with tab1:
-    st.subheader("🌍 Country Overview")
-    st.markdown(generated_tab1 if generated_tab1 else "Please enter trip details and click 'Generate'.")
-
+    intro_container = st.empty()
 with tab2:
-    st.subheader("✈️ Flight Search Results")
-    st.markdown(generated_tab2 if generated_tab2 else "Please enter trip details and click 'Generate'.")
-
+    flight_container = st.empty()
 with tab3:
-    st.subheader("🧳 Suggested Itinerary")
-    st.markdown(generated_tab3 if generated_tab3 else "Please enter trip details and click 'Generate'.")
+    summary_container = st.empty()
+
+# Process logic
+if st.button("🧠 Generate Full Travel Plan"):
+    if not departure_country or not arrival_country:
+        st.warning("Please enter both departure and arrival countries.")
+    else:
+        with st.spinner("Planning your travel experience..."):
+            # ----- Introduction Tab -----
+            intro_prompt = (
+                f"You are a travel guide bot. Provide a friendly, detailed introduction to {arrival_country} for someone traveling from {departure_country}. "
+                f"Mention cultural highlights, top things to know, travel etiquette, and seasonal considerations for the period from {start_date} to {end_date}."
+            )
+            try:
+                intro_response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful travel information assistant."},
+                        {"role": "user", "content": intro_prompt}
+                    ]
+                )
+                intro_container.markdown(intro_response.choices[0].message.content)
+            except Exception as e:
+                intro_container.error(f"Introduction error: {str(e)}")
+
+            # ----- Flight Details Tab -----
+            try:
+                params = {
+                    "engine": "google_flights",
+                    "departure_id": departure_country[:3].upper(),
+                    "arrival_id": arrival_country[:3].upper(),
+                    "outbound_date": start_date.strftime('%Y-%m-%d'),
+                    "return_date": end_date.strftime('%Y-%m-%d'),
+                    "currency": "USD",
+                    "hl": "en",
+                    "api_key": st.secrets["SERPAPI_KEY"]
+                }
+                search = GoogleSearch(params)
+                results = search.get_dict()
+                best_flights = results.get('best_flights', [])
+
+                if not best_flights:
+                    flight_container.warning("No best flights found.")
+                else:
+                    for i, option in enumerate(best_flights, 1):
+                        st.markdown(f"### ✈️ Itinerary #{i}")
+                        st.markdown("---")
+
+                        total_duration = option.get('total_duration', 'N/A')
+                        total_emissions = option.get('carbon_emissions', {}).get('this_flight', None)
+                        emissions_kg = f"{total_emissions / 1000:.1f} kg" if total_emissions else "N/A"
+                        price = option.get('price', 'N/A')
+
+                        flight_text = ""
+                        for leg in option.get('flights', []):
+                            airline = leg.get('airline', 'Unknown Airline')
+                            flight_no = leg.get('flight_number', 'N/A')
+                            from_airport = leg.get('departure_airport', {}).get('name', 'Unknown Departure')
+                            to_airport = leg.get('arrival_airport', {}).get('name', 'Unknown Arrival')
+                            depart_time = leg.get('departure_airport', {}).get('time', 'N/A')
+                            arrive_time = leg.get('arrival_airport', {}).get('time', 'N/A')
+                            duration = leg.get('duration', 'N/A')
+                            aircraft = leg.get('airplane', 'N/A')
+                            travel_class = leg.get('travel_class', 'N/A')
+                            legroom = leg.get('legroom', 'N/A')
+
+                            flight_text += (
+                                f"- **{airline} Flight {flight_no}**\n"
+                                f"  - From: {from_airport} → {to_airport}\n"
+                                f"  - Departure: {depart_time} | Arrival: {arrive_time}\n"
+                                f"  - Duration: {duration} | Aircraft: {aircraft} | Class: {travel_class} | Legroom: {legroom}\n\n"
+                            )
+
+                        flight_text += (
+                            f"💰 **Total Price**: ${price}\n"
+                            f"🕒 **Total Duration**: {total_duration}\n"
+                            f"🌍 **Estimated Emissions**: {emissions_kg}"
+                        )
+                        flight_container.markdown(flight_text)
+            except Exception as e:
+                flight_container.error(f"Flight fetch error: {str(e)}")
+
+            # ----- Summary Tab -----
+            summary_prompt = (
+                f"Summarize a complete travel plan from {departure_country} to {arrival_country} from {start_date} to {end_date}.\n"
+                f"Include must-see attractions, travel tips, cultural highlights, weather advice, and flight logistics.\n"
+                f"Flight info: {flight_info or 'No specific flight info provided'}.\n"
+                f"Weather info: {weather_info or 'No weather context given'}."
+            )
+            try:
+                summary_response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are an expert travel planner assistant."},
+                        {"role": "user", "content": summary_prompt}
+                    ]
+                )
+                summary_container.markdown(summary_response.choices[0].message.content)
+            except Exception as e:
+                summary_container.error(f"Summary error: {str(e)}")
