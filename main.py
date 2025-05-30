@@ -37,7 +37,7 @@ with tab1:
 
         search = GoogleSearch(params)
         results = search.get_dict()
-        best_flights = results.get('best_flights', [])
+        print(results)
 
 # Inputs
 destination = st.text_input("📍 Destination", placeholder="e.g., few destinations is possible with , in between...")
