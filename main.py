@@ -24,20 +24,20 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Introduction", "Emissions Visuali
 
 # Add content to Tab 1
 with tab1:
+        params = {
+          "engine": "google_flights",
+          "departure_id": "PEK",
+          "arrival_id": "AUS",
+          "outbound_date": "2025-05-30",
+          "return_date": "2025-06-05",
+          "currency": "USD",
+          "hl": "en",
+          "api_key": "serpapi_key"
+        }
 
-params = {
-  "engine": "google_flights",
-  "departure_id": "PEK",
-  "arrival_id": "AUS",
-  "outbound_date": "2025-05-30",
-  "return_date": "2025-06-05",
-  "currency": "USD",
-  "hl": "en",
-  "api_key": "serpapi_key"
-}
-
-search = GoogleSearch(params)
-results = search.get_dict()
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        best_flights = results.get('best_flights', [])
 
 # Inputs
 destination = st.text_input("📍 Destination", placeholder="e.g., few destinations is possible with , in between...")
