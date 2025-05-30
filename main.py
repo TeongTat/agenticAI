@@ -90,12 +90,10 @@ if st.button("🧠 Generate Travel Plan"):
 
         # --- Summary ---
         summary_prompt = (
-            f"Create a comprehensive summary travel plan for a trip from {origin} to {destination} 
-            departing on {start_date} and returning on {end_date}.\n\n"
-            f"Include: \n- Introduction: {intro_text}\n"
-            f"- Weather Concerns: {weather_info}\n"
-            f"- Flight Preferences: {flight_info}\n"
-            f"- Flight Table Summary: {flight_df.to_markdown(index=False)}"
+            summary_prompt = f"""Create a comprehensive summary travel plan for a trip from {origin} to {destination}
+                                 departing on {start_date} and returning on {end_date}.
+                                 Include highlights from the introduction and flight details.
+                                 Make it informative, well-structured, and reader-friendly."""
         )
 
         summary_response = client.chat.completions.create(
