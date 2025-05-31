@@ -3,7 +3,6 @@ from serpapi import GoogleSearch
 from openai import OpenAI
 from datetime import date
 from PIL import Image
-import pandas as pd
 
 # Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -21,8 +20,8 @@ st.write("Plan your dream trip with me ✨")
 # Mainframe Inputs
 col1, col2 = st.columns(2)
 with col1:
-    origin_country = st.text_input("🛫 Departure Country", value="China")
-    destination_country = st.text_input("📍 Destination Country", value="United States")
+    origin = st.text_input("🛫 Departure Airport Code", value="PEK")
+    destination = st.text_input("📍 Destination Airport Code", value="AUS")
 with col2:
     start_date = st.date_input("🗓️ Departure Date", value=date.today())
     end_date = st.date_input("🗓️ Return Date")
@@ -37,7 +36,7 @@ intro_tab, flight_tab, summary_tab = st.tabs(["Introduction", "Flight Details", 
 if "generated" not in st.session_state:
     st.session_state.generated = False
     st.session_state.intro_text = ""
-    st.session_state.flight_df = pd.DataFrame()
+    st.session_state.flight_text = ""
     st.session_state.summary_text = ""
 
 # Button
@@ -45,9 +44,9 @@ if st.button("🧠 Generate Full Travel Plan"):
     st.session_state.generated = True
     with st.spinner("Planning your dream adventure...."):
 
-        ## Tab 1 - Introduction (using GPT)
+        ## Tab 1 - Introduction (using GPT only now)
         intro_prompt = (
-            f"Provide a travel overview for someone flying from {origin_country} to {destination_country}. "
+            f"Provide a travel overview for someone flying from {origin} to {destination}. "
             f"Include cultural insights, key attractions, safety tips, and general travel advice."
         )
         try:
@@ -63,15 +62,8 @@ if st.button("🧠 Generate Full Travel Plan"):
             st.session_state.intro_text = f"❌ Error generating intro: {str(e)}"
 
         ## Tab 2 - Flight Details using SerpAPI
+        flight_output = ""
         try:
-            # Use fixed airport codes for now as placeholders
-            airport_mapping = {
-                "China": "PEK",  # Beijing
-                "United States": "AUS"  # Austin
-            }
-            origin = airport_mapping.get(origin_country, "PEK")
-            destination = airport_mapping.get(destination_country, "AUS")
-
             params = {
                 "engine": "google_flights",
                 "departure_id": origin,
@@ -87,53 +79,56 @@ if st.button("🧠 Generate Full Travel Plan"):
             best_flights = results.get("best_flights", [])
 
             if not best_flights:
-                st.session_state.flight_df = pd.DataFrame()
+                flight_output = "🚫 No best flights found. Please try different dates or check input codes."
             else:
-                rows = []
-                for option in best_flights:
+                for i, option in enumerate(best_flights, 1):
+                    flight_output += f"\n✈️ **Itinerary #{i}**\n"
+                    flight_output += "---\n"
                     total_duration = option.get("total_duration", "N/A")
                     total_emissions = option.get("carbon_emissions", {}).get("this_flight")
-                    emissions_kg = f"{total_emissions / 1000:.1f}" if total_emissions else "N/A"
+                    emissions_kg = f"{total_emissions / 1000:.1f} kg" if total_emissions else "N/A"
                     price = option.get("price", "N/A")
 
                     for leg in option.get("flights", []):
-                        row = {
-                            "Airline": leg.get("airline", "Unknown"),
-                            "Flight #": leg.get("flight_number", "N/A"),
-                            "From": leg.get("departure_airport", {}).get("name", "Unknown"),
-                            "To": leg.get("arrival_airport", {}).get("name", "Unknown"),
-                            "Departure": leg.get("departure_airport", {}).get("time", "N/A"),
-                            "Arrival": leg.get("arrival_airport", {}).get("time", "N/A"),
-                            "Duration (min)": leg.get("duration", "N/A"),
-                            "Aircraft": leg.get("airplane", "N/A"),
-                            "Class": leg.get("travel_class", "N/A"),
-                            "Legroom": leg.get("legroom", "N/A"),
-                            "Total Price ($)": price,
-                            "Total Duration": total_duration,
-                            "Emissions (kg)": emissions_kg
-                        }
-                        rows.append(row)
+                        airline = leg.get("airline", "Unknown Airline")
+                        flight_no = leg.get("flight_number", "N/A")
+                        from_airport = leg.get("departure_airport", {}).get("name", "Unknown Departure")
+                        to_airport = leg.get("arrival_airport", {}).get("name", "Unknown Arrival")
+                        depart_time = leg.get("departure_airport", {}).get("time", "N/A")
+                        arrive_time = leg.get("arrival_airport", {}).get("time", "N/A")
+                        duration = leg.get("duration", "N/A")
+                        aircraft = leg.get("airplane", "N/A")
+                        travel_class = leg.get("travel_class", "N/A")
+                        legroom = leg.get("legroom", "N/A")
 
-                st.session_state.flight_df = pd.DataFrame(rows)
+                        flight_output += (
+                            f"- {airline} Flight {flight_no} from {from_airport} to {to_airport}  "
+                            f"  🛫 {depart_time} → 🛬 {arrive_time}  \
+"
+                            f"  Duration: {duration} min | Aircraft: {aircraft} | Class: {travel_class} | Legroom: {legroom}\n"
+                        )
+                    flight_output += f"💰 **Total Price**: ${price}  \\n🕒 **Total Duration**: {total_duration} min  \\n🌍 **Estimated Emissions**: {emissions_kg}\n\n"
 
         except Exception as e:
-            st.session_state.flight_df = pd.DataFrame({"Error": [str(e)]})
+            flight_output = f"❌ Error retrieving flights: {str(e)}"
 
-        ## Tab 3 - Summary
-        summary_prompt = f"""
-        Create a comprehensive summary travel plan for a trip from {origin_country} to {destination_country}
-        departing on {start_date} and returning on {end_date}.
-        Include highlights from the introduction and flight details.
-        User's weather query: {weather_info}
-        Make it informative, well-structured, and reader-friendly.
-        """
+        st.session_state.flight_text = flight_output
+
+        ## Tab 3 - Summary from GPT
+        summary_prompt = (
+            f"You are an expert travel assistant summarizing the following information:\n"
+            f"---\nINTRODUCTION:\n{st.session_state.intro_text}\n\n"
+            f"---\nFLIGHT OPTIONS:\n{st.session_state.flight_text}\n\n"
+            f"The user also asked: {weather_info}\n\n"
+            f"Please provide a warm, markdown-formatted summary itinerary with weather packing tips."
+        )
 
         try:
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
                     {"role": "system", "content": "You summarize and polish user travel plans."},
-                    {"role": "user", "content": summary_prompt + "\n\n" + st.session_state.intro_text}
+                    {"role": "user", "content": summary_prompt}
                 ],
                 temperature=0.7
             )
@@ -148,10 +143,7 @@ with intro_tab:
 
 with flight_tab:
     if st.session_state.generated:
-        if not st.session_state.flight_df.empty:
-            st.dataframe(st.session_state.flight_df, use_container_width=True)
-        else:
-            st.warning("No flights found. Try adjusting your dates or input.")
+        st.markdown(st.session_state.flight_text)
 
 with summary_tab:
     if st.session_state.generated:
