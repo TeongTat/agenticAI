@@ -147,4 +147,4 @@ with flight_tab:
 
 with summary_tab:
     if st.session_state.generated:
-        st.markdown(st.session_state.summary_text)
+        st.markdown(st.session_state.summary_text) 
