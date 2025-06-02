@@ -10,3 +10,5 @@ langchain_core
 pydantic
 panda
 datetime
+json
+
