@@ -4,6 +4,7 @@ from openai import OpenAI
 from datetime import date
 from PIL import Image
 import pandas as pd
+import json
 
 # Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
