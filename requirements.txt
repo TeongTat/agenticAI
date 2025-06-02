@@ -11,4 +11,4 @@ pydantic
 panda
 datetime
 json
-
+pip install --upgrade pip
