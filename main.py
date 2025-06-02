@@ -70,8 +70,8 @@ if st.button("🧠 Generate Full Travel Plan"):
                         flight_data = json.load(f)
                         df_flights = pd.DataFrame(flight_data)
                         st.dataframe(df_flights, use_container_width=True)
-        except Exception as e:
-            st.error(f"❌ Could not load flight data: {str(e)}")
+                except Exception as e:
+                    st.error(f"❌ Could not load flight data: {str(e)}")
 
         # Tab 3 - Summary
         summary_prompt = (
