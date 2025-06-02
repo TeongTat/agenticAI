@@ -4,7 +4,6 @@ from openai import OpenAI
 from datetime import date
 from PIL import Image
 import pandas as pd
-import json
 
 # Initialize OpenAI client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -64,15 +63,64 @@ if st.button("🧠 Generate Full Travel Plan"):
             st.session_state.intro_text = f"❌ Error generating intro: {str(e)}"
 
         # Tab 2 - Flight Details with SerpAPI (Now using Table)
-        with flight_tab:
-            if st.session_state.generated:
-                try:
-                    with open("data/flights.json", "r", encoding="utf-8") as f:
-                        flight_data = json.load(f)
-                        df_flights = pd.DataFrame(flight_data)
-                        st.dataframe(df_flights, use_container_width=True)
-                except Exception as e:
-                        st.error(f"❌ Could not load flight data: {str(e)}")
+        flight_output = ""
+        flight_rows = []
+
+        try:
+            params = {
+                "engine": "google_flights",
+                "departure_id": origin,
+                "arrival_id": destination,
+                "outbound_date": start_date.strftime("%Y-%m-%d"),
+                "return_date": end_date.strftime("%Y-%m-%d"),
+                "currency": "USD",
+                "hl": "en",
+                "api_key": st.secrets["SERPAPI_KEY"]
+            }
+            search = GoogleSearch(params)
+            results = search.get_dict()
+            best_flights = results.get("best_flights", [])
+
+            if not best_flights:
+                flight_output = "🚫 No best flights found. Please try different dates or check input codes."
+            else:
+                for option in best_flights:
+                    total_duration = option.get("total_duration", "N/A")
+                    total_emissions = option.get("carbon_emissions", {}).get("this_flight")
+                    emissions_kg = f"{total_emissions / 1000:.1f}" if total_emissions else "N/A"
+                    price = option.get("price", "N/A")
+
+                    segments = []
+                    for leg in option.get("flights", []):
+                        airline = leg.get("airline", "Unknown Airline")
+                        flight_no = leg.get("flight_number", "N/A")
+                        from_airport = leg.get("departure_airport", {}).get("name", "Unknown Departure")
+                        to_airport = leg.get("arrival_airport", {}).get("name", "Unknown Arrival")
+                        depart_time = leg.get("departure_airport", {}).get("time", "N/A")
+                        arrive_time = leg.get("arrival_airport", {}).get("time", "N/A")
+                        duration = leg.get("duration", "N/A")
+
+                        segments.append(
+                            f"{airline} {flight_no} ({from_airport} ➡ {to_airport})\n"
+                            f"🕒 {depart_time} → {arrive_time} | {duration} min"
+                        )
+
+                    flight_rows.append({
+                        "Itinerary": "\n\n".join(segments),
+                        "Total Duration (min)": total_duration,
+                        "Emissions (kg CO₂)": emissions_kg,
+                        "Price (USD)": price
+                    })
+
+        except Exception as e:
+            flight_output = f"❌ Error retrieving flights: {str(e)}"
+
+        # Save result
+        if flight_rows:
+            df_flights = pd.DataFrame(flight_rows)
+            st.session_state.flight_text = df_flights
+        else:
+            st.session_state.flight_text = flight_output
 
         # Tab 3 - Summary
         summary_prompt = (
