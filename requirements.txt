@@ -10,3 +10,4 @@ langchain_core
 pydantic
 panda
 google-generativeai
+pip install google-search-results
