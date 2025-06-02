@@ -1,12 +1,11 @@
-import streamlit as st
+  import streamlit as st
 from serpapi import GoogleSearch
+from openai import OpenAI
 from datetime import date
 from PIL import Image
-import google.generativeai as genai
 
-# Configure Gemini (Google Generative AI)
-genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Initialize OpenAI client
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="🌍 Your Personalized Travel Planner", layout="centered")
 st.title("🌍 Awesome Travel Planner")
@@ -30,10 +29,10 @@ with col2:
 weather_info = st.text_input("☁️ Weather Questions", placeholder="e.g., What to pack for weather?")
 flight_info = st.text_area("✈️ Additional Flight Preferences", placeholder="e.g., morning flight, prefer direct, etc.")
 
-# Tabs
+# Create tabs
 intro_tab, flight_tab, summary_tab = st.tabs(["Introduction", "Flight Details", "Summary"])
 
-# Session state
+# Placeholder for generated content
 if "generated" not in st.session_state:
     st.session_state.generated = False
     st.session_state.intro_text = ""
@@ -45,18 +44,24 @@ if st.button("🧠 Generate Full Travel Plan"):
     st.session_state.generated = True
     with st.spinner("Planning your dream adventure...."):
 
-        # --- Introduction via Gemini ---
+        ## Tab 1 - Introduction (using GPT only now)
         intro_prompt = (
             f"Provide a travel overview for someone flying from {origin} to {destination}. "
             f"Include cultural insights, key attractions, safety tips, and general travel advice."
         )
         try:
-            response = model.generate_content(intro_prompt)
-            st.session_state.intro_text = response.text
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "user", "content": intro_prompt}
+                ],
+                temperature=0.7
+            )
+            st.session_state.intro_text = response.choices[0].message.content
         except Exception as e:
             st.session_state.intro_text = f"❌ Error generating intro: {str(e)}"
 
-        # --- Flight Details via SerpAPI ---
+        ## Tab 2 - Flight Details using SerpAPI
         flight_output = ""
         try:
             params = {
@@ -98,17 +103,18 @@ if st.button("🧠 Generate Full Travel Plan"):
 
                         flight_output += (
                             f"- {airline} Flight {flight_no} from {from_airport} to {to_airport}  "
-                            f"  🛫 {depart_time} → 🛬 {arrive_time}  \n"
+                            f"  🛫 {depart_time} → 🛬 {arrive_time}  \
+"
                             f"  Duration: {duration} min | Aircraft: {aircraft} | Class: {travel_class} | Legroom: {legroom}\n"
                         )
-                    flight_output += f"💰 **Total Price**: ${price}  \n🕒 **Total Duration**: {total_duration} min  \n🌍 **Estimated Emissions**: {emissions_kg}\n\n"
+                    flight_output += f"💰 **Total Price**: ${price}  \\n🕒 **Total Duration**: {total_duration} min  \\n🌍 **Estimated Emissions**: {emissions_kg}\n\n"
 
         except Exception as e:
             flight_output = f"❌ Error retrieving flights: {str(e)}"
 
         st.session_state.flight_text = flight_output
 
-        # --- Summary via Gemini ---
+        ## Tab 3 - Summary from GPT
         summary_prompt = (
             f"You are an expert travel assistant summarizing the following information:\n"
             f"---\nINTRODUCTION:\n{st.session_state.intro_text}\n\n"
@@ -116,13 +122,21 @@ if st.button("🧠 Generate Full Travel Plan"):
             f"The user also asked: {weather_info}\n\n"
             f"Please provide a warm, markdown-formatted summary itinerary with weather packing tips."
         )
+
         try:
-            response = model.generate_content(summary_prompt)
-            st.session_state.summary_text = response.text
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": "You summarize and polish user travel plans."},
+                    {"role": "user", "content": summary_prompt}
+                ],
+                temperature=0.7
+            )
+            st.session_state.summary_text = response.choices[0].message.content
         except Exception as e:
             st.session_state.summary_text = f"❌ Error generating summary: {str(e)}"
 
-# Display tabs
+# Display content per tab
 with intro_tab:
     if st.session_state.generated:
         st.markdown(st.session_state.intro_text)
@@ -133,4 +147,4 @@ with flight_tab:
 
 with summary_tab:
     if st.session_state.generated:
-        st.markdown(st.session_state.summary_text)
+        st.markdown(st.session_state.summary_text) 
