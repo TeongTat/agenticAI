@@ -1,4 +1,4 @@
-  import streamlit as st
+import streamlit as st
 from serpapi import GoogleSearch
 from openai import OpenAI
 from datetime import date
