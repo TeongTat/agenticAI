@@ -9,5 +9,4 @@ google-search-results
 langchain_core
 pydantic
 panda
-json
 datetime
