@@ -1,5 +1,4 @@
 import streamlit as st
-from serpapi import GoogleSearch
 from openai import OpenAI
 from datetime import date
 from PIL import Image
