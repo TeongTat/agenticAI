@@ -9,5 +9,3 @@ google-search-results
 langchain_core
 pydantic
 panda
-google-generativeai
-googlesearch
